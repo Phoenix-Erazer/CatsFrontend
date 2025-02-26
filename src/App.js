@@ -11,6 +11,9 @@ function App() {
   const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState(""); // Главная категория для фильтра
 
+  // Локальное состояние для категории в форме добавления котика
+  const [formCategory, setFormCategory] = useState("");
+
   // Функция для получения котиков с фильтром
   const fetchCats = useCallback(() => {
     const url = category
@@ -51,7 +54,7 @@ function App() {
       return;
     }
 
-    const newCat = { title, image_url: imageUrl, category };
+    const newCat = { title, image_url: imageUrl, category: formCategory }; // Используем локальную категорию из формы
 
     axios
       .post("https://cats-api-hfgi.onrender.com/api/cats/", newCat)
@@ -59,6 +62,7 @@ function App() {
         setCats([...cats, response.data]);
         setTitle("");
         setImageUrl("");
+        setFormCategory(""); // Сбрасываем локальную категорию в форме
         setShowForm(false);
       })
       .catch((error) => {
@@ -74,7 +78,7 @@ function App() {
           <select
             className="category-filter"
             value={category}
-            onChange={(e) => setCategory(e.target.value)} // Обновляем состояние категории при выборе
+            onChange={(e) => setCategory(e.target.value)} // Обновляем глобальное состояние категории
           >
             <option value="">Все</option>
             <option value="cute">Милый</option>
@@ -93,21 +97,23 @@ function App() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Добавить котика</h2>
             <input
+              className="input-field"
               type="text"
               placeholder="Название котика"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <input
+              className="input-field"
               type="text"
               placeholder="URL изображения"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
             />
             <select
-              className="category-filter"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)} // Обновляем состояние категории
+              className="input-field category-filter" // Добавляем тот же стиль для селекта
+              value={formCategory}
+              onChange={(e) => setFormCategory(e.target.value)}
             >
               <option value="">Выберите категорию</option>
               <option value="cute">Милый</option>
